@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Agri-Trak 241 — Prototype</title>
+<style>
+:root{--bg:#FBF7E9;--card:#fff;--tx:#14323F;--mu:#5A6B73;--bl:#0A7D4F;--vt:#3E8E2F;--or:#FCD116;--rg:#B83227;--bd:#D8E1DD;--ok:#E6F4E1;--ko:#FCE8E6}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1A20;--card:#17262E;--tx:#E6EEF0;--mu:#9DB0B8;--bd:#2B3F49;--ok:#1B3A22;--ko:#44201C;--bl:#4FD08F;--vt:#7CC96A;--rg:#F08A80}}
+:root[data-theme="dark"]{--bg:#0F1A20;--card:#17262E;--tx:#E6EEF0;--mu:#9DB0B8;--bd:#2B3F49;--ok:#1B3A22;--ko:#44201C;--bl:#4FD08F;--vt:#7CC96A;--rg:#F08A80}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{background:#0B4A33;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}header svg{flex:none}header div{flex:1}.flag{height:9px;background:linear-gradient(#009E60 33.3%,#FCD116 0 66.6%,#3A75C4 0)}.band{height:10px;background:repeating-linear-gradient(135deg,#0A7D4F 0 8px,#FCD116 8px 12px,#3A75C4 12px 16px,#fff 16px 18px)}
+header small{display:block;opacity:.8;font-size:.78rem}header b{font-size:1.1rem}#net{font-size:.75rem;background:#ffffff22;padding:3px 9px;border-radius:99px}
+nav{display:flex;overflow-x:auto;background:var(--card);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:2}
+nav button{flex:none;border:0;background:none;color:var(--mu);padding:12px 14px;font:inherit;font-weight:600;border-bottom:3px solid transparent}
+nav button.on{color:var(--bl);border-color:var(--bl)}
+main{padding:12px;max-width:720px;margin:auto}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:10px}
+.card.sel{border-color:var(--bl);box-shadow:0 0 0 2px var(--bl) inset}
+h2{font-size:1.05rem;margin:4px 0 8px}h3{font-size:.95rem;margin-bottom:6px}
+.note{font-size:.82rem;color:var(--mu);margin-bottom:10px}
+label{display:block;font-size:.82rem;color:var(--mu);margin:6px 0 2px}
+input,select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;font:inherit;background:var(--bg);color:var(--tx)}
+button.b{background:var(--bl);color:#fff;border:0;border-radius:8px;padding:11px 14px;font:inherit;font-weight:600;margin-top:10px;width:100%}
+button.b.s{background:var(--bd);color:var(--tx)}button.b.r{background:var(--rg);color:#fff}
+.msg{padding:10px;border-radius:8px;margin-bottom:10px;font-weight:600}.msg.ok{background:var(--ok)}.msg.ko{background:var(--ko)}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}.k{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px}
+.k b{display:block;font-size:1.35rem}.k span{font-size:.78rem;color:var(--mu)}
+.tag{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:99px;background:var(--bd)}.tag.n{background:var(--or);color:#14323F}
+code{font:.72rem monospace;word-break:break-all;display:block;background:var(--bg);padding:6px;border-radius:6px;margin:6px 0}
+#qr{display:flex;justify-content:center;padding:8px;background:#fff;border-radius:8px;margin:8px 0;min-height:60px}
+.row{display:flex;justify-content:space-between;gap:8px;font-size:.88rem;padding:4px 0;border-bottom:1px solid var(--bd)}
+
+.hero{background:linear-gradient(135deg,#0A7D4F,#0B4A33);color:#fff;border-radius:14px;padding:14px;margin-bottom:12px}.hero small{opacity:.85}.hero .big{font-size:2rem;font-weight:800;color:#FCD116;line-height:1.1}.hero .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.hero .g2 div{background:#ffffff1f;border-radius:10px;padding:8px}.hero .g2 b{display:block;font-size:1.25rem}
+.st{display:flex;gap:12px;position:relative;padding-bottom:14px}.st:not(:last-child):before{content:'';position:absolute;left:21px;top:44px;bottom:0;width:3px;background:var(--bd)}.st.ok:not(:last-child):before{background:var(--bl)}
+.ic{flex:none;width:44px;height:44px;border-radius:50%;background:var(--card);border:3px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:22px;z-index:1}.st.ok .ic{border-color:var(--bl)}.st.on .ic{border-color:var(--or);box-shadow:0 0 0 3px #FCD11655}.st.nx{opacity:.62}
+.tx{flex:1;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px}.tx b{font-size:.98rem}.tx .note{margin:2px 0 6px}
+</style>
+</head>
+<body>
+<div class="flag"></div><header><svg viewBox="0 0 104 100" width="58" height="58" aria-hidden="true"><path d="M22 58Q2 44 8 24Q22 34 30 48Z" fill="#FCD116" stroke="#14323F" stroke-width="2"/><ellipse cx="50" cy="62" rx="31" ry="23" fill="#fff" stroke="#14323F" stroke-width="2"/><path d="M36 60Q52 82 68 60Q52 52 36 60Z" fill="#F3E7B3" stroke="#14323F" stroke-width="2"/><circle cx="78" cy="36" r="14" fill="#fff" stroke="#14323F" stroke-width="2"/><circle cx="71" cy="22" r="5" fill="#D93025"/><circle cx="78" cy="19" r="5" fill="#D93025"/><circle cx="85" cy="23" r="5" fill="#D93025"/><path d="M91 34L103 38L91 42Z" fill="#FCD116" stroke="#14323F" stroke-width="2"/><circle cx="82" cy="33" r="2.4" fill="#14323F"/><ellipse cx="88" cy="46" rx="3" ry="5" fill="#D93025"/><path d="M44 83V95M58 83V95M38 96H50M52 96H64" stroke="#E8A317" stroke-width="3.5" stroke-linecap="round"/></svg><div><b>Agri-Trak 241</b><small>Du poussin à l’assiette gabonaise · Consommons Gabonais</small></div><span id="net"></span></header><div class="band"></div>
+<nav id="tabs"></nav>
+<main id="app"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),v=i=>$('#'+i).value,n=i=>Number(v(i));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PROV={'Estuaire':'EST','Haut-Ogooué':'HOG','Moyen-Ogooué':'MOG','Ngounié':'NGO','Nyanga':'NYA','Ogooué-Ivindo':'OIV','Ogooué-Lolo':'OLO','Ogooué-Maritime':'OMA','Woleu-Ntem':'WNT'};
+const KEY='agt241_proto_v1',today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)},f2=x=>x==null?'—':String(Math.round(x*100)/100).replace('.',',');
+const fresh=()=>({fermes:[],bandes:[],saisies:[],alertes:[],lots:[],ops:[{nom:'Abattoir de démonstration',type:'Abattoir'},{nom:'Acheteur de démonstration',type:'Acheteur'}],journal:[],seuil:2,fid:null,bid:null,lid:null});
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.journal)return s}catch(e){}return fresh()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let S=load(),tab='parcours',msg='',okm=true;
+
+/* ---- Journal non modifiable : chaîne SHA-256 ---- */
+async function H(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+const ent=e=>e.prev+'|'+e.n+'|'+e.t+'|'+e.action+'|'+JSON.stringify(e.d);
+async function log(action,d){const e={n:S.journal.length+1,t:new Date().toISOString(),action,d,prev:S.journal.length?S.journal[S.journal.length-1].hash:'0'.repeat(64)};e.hash=await H(ent(e));S.journal.push(e);save()}
+async function verif(j){let p='0'.repeat(64);for(const e of j){if(e.prev!==p||e.hash!==await H(ent(e)))return e.n;p=e.hash}return 0}
+
+/* ---- Calculs (formules proposées par le cahier des charges) ---- */
+const sm=(a,t,f)=>a.filter(x=>x.type==t).reduce((s,x)=>s+(+x[f]||0),0);
+function st(b){const a=S.saisies.filter(x=>x.bid==b.id),M=sm(a,'jour','morts'),al=sm(a,'jour','alim'),so=sm(a,'sortie','n'),kg=sm(a,'sortie','kg'),
+p=a.filter(x=>x.type=='pesee').sort((x,y)=>x.date<y.date?-1:1).pop(),ef=b.poussins-M-so,age=p?Math.max(1,Math.round((new Date(p.date)-new Date(b.date))/864e5)):0,
+pv=kg+(p?ef*p.pm/1000:0)-b.poussins*b.pi/1000;
+return{M,al,so,kg,ef,mort:M/b.poussins*100,via:100-M/b.poussins*100,gmq:p?(p.pm-b.pi)/age:null,ic:(p||ef==0)&&pv>0?al/pv:null,pm:p?p.pm:null,jour:Math.round((new Date(today())-new Date(b.date))/864e5)}}
+const cf=()=>S.fermes.find(f=>f.id==S.fid),cb=()=>S.bandes.find(b=>b.id==S.bid),cl=()=>S.lots.find(l=>l.id==S.lid);
+
+/* ---- Actions métier ---- */
+async function mkFerme(nom,p){nom=nom.trim();if(!nom||!PROV[p])return'Nom et province obligatoires.';
+if(S.fermes.some(f=>f.nom.toLowerCase()==nom.toLowerCase()&&f.prov==p))return'Doublon : cette ferme existe déjà dans cette province.';
+const o=S.fermes.filter(f=>f.prov==p).length+1,f={id:S.fermes.length+1,nom,prov:p,code:PROV[p]+'-'+String(o).padStart(3,'0')};
+S.fermes.push(f);S.fid=f.id;await log('creation_ferme',{code:f.code,nom,province:p});save();return''}
+async function mkBande(f,date,q,pi){if(!f)return'Choisissez d’abord une ferme.';if(!date||!Number.isInteger(q)||q<1||!(pi>0))return'Date, nombre de poussins et poids initial sont obligatoires.';
+const b={id:S.bandes.length+1,fid:f.id,code:f.code+'-B'+(S.bandes.filter(x=>x.fid==f.id).length+1),date,poussins:q,pi,statut:'en cours'};
+S.bandes.push(b);S.bid=b.id;await log('ouverture_bande',{bande:b.code,date,poussins:q});save();return''}
+async function addJour(b,date,m,al){if(!b)return'Choisissez une bande.';if(b.statut=='clôturée')return'Bande clôturée : lecture seule.';const s=st(b);if(date<b.date)return'La date est antérieure à la mise en place.';
+if(!Number.isInteger(m)||m<0)return'Mortalité : nombre entier positif ou nul.';if(m>s.ef)return`Contrôle : les morts (${m}) dépassent l’effectif présent (${s.ef}).`;if(!(al>=0))return'Aliment invalide.';
+S.saisies.push({type:'jour',bid:b.id,date,morts:m,alim:al});await log('fiche_elevage',{bande:b.code,date,morts:m,aliment_kg:al});
+if(m>0&&s.ef>0){const p=m/s.ef*100;if(p>S.seuil){S.alertes.push({id:S.alertes.length+1,bande:b.code,date,pct:+p.toFixed(2),seuil:S.seuil,statut:'Nouvelle'});await log('alerte',{bande:b.code,date,mortalite_jour_pct:+p.toFixed(2),seuil:S.seuil})}}
+save();return''}
+async function addPesee(b,date,q,pm){if(!b)return'Choisissez une bande.';if(b.statut=='clôturée')return'Bande clôturée : lecture seule.';const s=st(b);if(date<b.date)return'La date est antérieure à la mise en place.';
+if(!Number.isInteger(q)||q<1||q>s.ef)return`Contrôle : le nombre pesé doit être entre 1 et l’effectif présent (${s.ef}).`;if(!(pm>0))return'Poids moyen invalide.';
+S.saisies.push({type:'pesee',bid:b.id,date,n:q,pm});await log('pesee',{bande:b.code,date,nombre:q,poids_moyen_g:pm});save();return''}
+async function addSortie(b,date,q,kg,dest){if(!b)return'Choisissez une bande.';if(b.statut=='clôturée')return'Bande clôturée : lecture seule.';const s=st(b);if(date<b.date)return'La date est antérieure à la mise en place.';
+if(!Number.isInteger(q)||q<1)return'Nombre d’animaux invalide.';if(q>s.ef)return`Contrôle : la sortie (${q}) dépasse l’effectif présent (${s.ef}).`;if(!(kg>0))return'Poids total invalide.';if(!dest)return'Destinataire obligatoire (voir l’onglet Lots & QR).';
+S.saisies.push({type:'sortie',bid:b.id,date,n:q,kg,dest});
+const code=b.code+'-L'+(S.lots.filter(l=>l.bid==b.id).length+1),emp=(await H([code,q,kg,dest,date].join('|'))).slice(0,12);
+S.lots.push({id:S.lots.length+1,bid:b.id,code,date,n:q,kg,dest,emp,statut:'actif'});S.lid=S.lots.length;await log('cession_lot',{lot:code,nombre:q,poids_kg:kg,destinataire:dest});
+if(s.ef-q==0){b.statut='clôturée';await log('cloture_bande',{bande:b.code})}save();return''}
+const hx=t=>[...new TextEncoder().encode(t)].map(b=>b.toString(16).padStart(2,'0')).join(''),unhx=h=>new TextDecoder().decode(new Uint8Array((h.match(/../g)||[]).map(x=>parseInt(x,16))));
+const pubURL=l=>{const b=S.bandes.find(x=>x.id==l.bid),f=S.fermes.find(x=>x.id==b.fid);return location.href.split('#')[0]+'#AGT241-'+hx([l.code,l.emp,f.nom,f.prov,l.date].join('|'))};
+function parseQR(c){c=String(c).trim();const i=c.indexOf('#AGT241-');if(i>=0){try{const p=unhx(c.slice(i+8)).split('|');return{code:p[0],emp:p[1],f:p[2],prov:p[3],date:p[4]}}catch(e){return null}}const m=c.match(/^AGT241:([^:]+):([0-9a-f]{12})$/);return m?{code:m[1],emp:m[2]}:null}
+const coh=(m,l)=>{if(!m.f)return true;const b=S.bandes.find(x=>x.id==l.bid),f=S.fermes.find(x=>x.id==b.fid);return m.date===l.date&&m.f===f.nom&&m.prov===f.prov};
+const emp=l=>H([l.code,l.n,l.kg,l.dest,l.date].join('|')).then(x=>x.slice(0,12));
+async function pub(){const m=parseQR(location.href);$('#tabs').innerHTML='';let h;
+if(!m||!m.f)h='<div class="msg ko">QR illisible.</div>';else{const l=S.lots.find(x=>x.code==m.code);let t;
+if(l){const ok=m.emp===await emp(l)&&coh(m,l);t=l.statut=='clos'?'<div class="msg ko">Lot clos : rejeté.</div>':ok?'<div class="msg ok">Lot authentique (registre de cet appareil).</div>':'<div class="msg ko">QR falsifié : empreinte invalide.</div>';await log('scan',{code:m.code,resultat:'Page publique : '+(l.statut=='clos'?'lot clos':ok?'authentique':'falsifié')})}
+else t='<div class="msg">Origine lue dans le QR. Son authenticité ne peut être confirmée qu’avec un registre central (serveur), non disponible dans ce prototype.</div>';
+h=t+`<div class="card"><h2>Origine déclarée</h2>Producteur : <b>${esc(m.f)}</b> (${esc(m.prov)})<br>Lot : ${esc(m.code)}<br>Cédé le ${esc(m.date)}<p class="note">Aucune donnée personnelle. Ce n’est pas un certificat sanitaire.</p></div>`}
+$('#app').innerHTML='<div class="card"><h2>Consultation publique</h2><div class="note">Agri-Trak 241 · Programme POUFA</div></div>'+h+'<button class="b" onclick="location.hash=\'\';R()">Ouvrir l’application</button>'}
+async function scanCode(c){const m=parseQR(c),l=m&&S.lots.find(x=>x.code==m.code);let r,ok=false;
+if(!l)r='Rejeté : QR inconnu';else if(m.emp!==await emp(l)||!coh(m,l))r='Rejeté : QR falsifié (empreinte invalide)';
+else if(l.statut=='clos')r='Rejeté : lot clos';
+else{const b=S.bandes.find(x=>x.id==l.bid),f=S.fermes.find(x=>x.id==b.fid);r=`Accepté : lot ${l.code} · produit par ${f.nom} (${f.prov}) · ${l.n} animaux · destinataire ${l.dest}`;ok=true}
+await log('scan',{code:c.trim().slice(0,70),resultat:r});save();msg=r;okm=ok;tab='lots';R()}
+
+/* ---- Interface ---- */
+const T=[['parcours','Parcours'],['fermes','Fermes'],['saisies','Saisies'],['bilan','Bilan'],['alertes','Alertes'],['lots','Lots & QR'],['journal','Journal']];
+const go=t=>{tab=t;msg='';window.arm=0;R()};
+async function act(fn){try{const e=await fn()||'';if(e.startsWith('OK:')){msg=e.slice(3);okm=true}else{msg=e||'Enregistré.';okm=!e}}catch(x){msg='Erreur : '+x.message;okm=false}R()}
+const opts=a=>a.map(x=>`<option>${esc(x)}</option>`).join('');
+const selF=i=>{S.fid=i;S.bid=null;save();R()},selB=i=>{S.bid=i;save();R()},selL=i=>{S.lid=i;save();R()};
+const nb=()=>`<div class="card">Choisissez d’abord une bande dans l’onglet Fermes (ou chargez les données de démonstration).</div>`;
+const V={
+parcours(){const n=Math.max(0,Math.ceil((new Date('2027-01-01T00:00:00')-new Date())/864e5)),b=cb(),s=b?st(b):null,nl=S.lots.length,na=S.alertes.length,
+lab={ok:'Fait',on:'En cours',todo:'À faire',nx:'Prévu (phase 2)'},
+step=(ic,t,d,state)=>`<div class="st ${state}"><div class="ic">${ic}</div><div class="tx"><b>${t}</b><div class="note">${d}</div><span class="tag ${state=='on'?'n':''}">${lab[state]}</span></div></div>`;
+return`<div class="hero"><small>Fin des importations de poulet au Gabon</small><div class="big">1er janvier 2027</div><div>${n>0?'Il reste <b>'+n+' jours</b>':'La date est atteinte'} pour que la production nationale prenne le relais.</div>
+<div class="g2"><div><b>150</b><small>fermes du programme POUFA</small></div><div><b>79</b><small>opérationnelles (cahier des charges)</small></div></div></div>
+<h2>Le parcours d’un poulet gabonais</h2><p class="note">Chaque étape se remplit avec les données saisies dans l’application. Les étapes grisées sont prévues dans la phase 2.</p>
+${step('🐣','Poussin d’un jour',b?`${b.poussins} poussins reçus le ${b.date}`:'Ouvrez une bande dans l’onglet Fermes.',b?'ok':'todo')}
+${step('🏡','Élevage en ferme · 45 jours',b?`Jour ${s.jour}/45 · ${s.ef} animaux présents`:'Choisissez une bande.',b?(b.statut=='en cours'?'on':'ok'):'todo')}
+${step('💉','Santé et alimentation',b?`Mortalité ${f2(s.mort)} % · indice de consommation ${f2(s.ic)} · ${na} alerte(s)`:'Saisies quotidiennes et pesées.',b?(b.statut=='en cours'?'on':'ok'):'todo')}
+${step('📦','Lot et QR code',nl?`${nl} lot(s) créé(s) : le QR prouve l’origine`:'Le lot est créé à la première cession.',nl?'ok':'todo')}
+${step('🏭','Abattoir','Réception et validation du lot.','nx')}
+${step('🛒','Distribution','Contrôle par le distributeur.','nx')}
+${step('🍽️','Dans l’assiette gabonaise',nl?'Le consommateur scanne le QR : producteur, province et date s’affichent. Poulet nyembwe, d’ici et de chez nous.':'Poulet nyembwe, d’ici et de chez nous : le QR en prouvera l’origine.',nl?'ok':'todo')}`},
+fermes(){const f=cf();return`<p class="note">Prototype de démonstration : données fictives stockées sur ce téléphone, sans serveur ni synchronisation. Formules et seuils proposés, à valider par la DGE et les services vétérinaires.</p>
+<button class="b s" onclick="act(demo)">Charger des données de démonstration (fictives)</button><button class="b s" onclick="if(!window.arm){window.arm=1;msg='Touchez de nouveau « Effacer » pour confirmer : toutes les données locales seront supprimées.';okm=false;R();return}window.arm=0;S=fresh();save();msg='Données effacées.';okm=true;R()">Effacer toutes les données</button>
+<div class="card" style="margin-top:12px"><h2>Nouvelle ferme</h2><label>Nom de la ferme</label><input id="fn"><label>Province</label><select id="fp">${opts(Object.keys(PROV))}</select>
+<button class="b" onclick="act(()=>mkFerme(v('fn'),v('fp')))">Enregistrer la ferme</button><p class="note">Identifiant automatique : code province + numéro d’ordre.</p></div>
+<h2>Fermes (${S.fermes.length})</h2>${S.fermes.map(x=>`<div class="card ${x.id==S.fid?'sel':''}" onclick="selF(${x.id})"><b>${esc(x.nom)}</b> <span class="tag">${x.code}</span><div class="note">${x.prov}</div></div>`).join('')||'<p class="note">Aucune ferme.</p>'}
+${f?`<div class="card"><h2>Ouvrir une bande · ${esc(f.nom)}</h2><label>Date de réception des poussins</label><input id="bd" type="date" value="${today()}"><label>Nombre de poussins</label><input id="bq" type="number" inputmode="numeric" value="1000"><label>Poids moyen à la mise en place (g)</label><input id="bp" type="number" inputmode="decimal" value="40">
+<button class="b" onclick="act(()=>mkBande(cf(),v('bd'),n('bq'),n('bp')))">Ouvrir la bande</button><p class="note">Durée de référence d’une bande : 45 jours.</p></div>
+${S.bandes.filter(b=>b.fid==f.id).map(b=>`<div class="card ${b.id==S.bid?'sel':''}" onclick="selB(${b.id})"><b>${b.code}</b> <span class="tag">${b.statut}</span><div class="note">Mise en place le ${b.date} · ${b.poussins} poussins · effectif présent ${st(b).ef}</div></div>`).join('')}`:''}`},
+saisies(){const b=cb();if(!b)return nb();const s=st(b);return`<div class="card"><b>${b.code}</b> <span class="tag">${b.statut}</span><div class="note">Effectif présent : <b>${s.ef}</b> = mis en place ${b.poussins} − morts ${s.M} − sorties ${s.so}</div></div>
+<div class="card"><h2>Fiche d’élevage</h2><label>Date</label><input id="d1" type="date" value="${today()}"><label>Morts</label><input id="m1" type="number" inputmode="numeric" value="0"><label>Aliment consommé (kg)</label><input id="a1" type="number" inputmode="decimal" value="0"><button class="b" onclick="act(()=>addJour(cb(),v('d1'),n('m1'),n('a1')))">Enregistrer</button></div>
+<div class="card"><h2>Pesée</h2><label>Date</label><input id="d2" type="date" value="${today()}"><label>Nombre d’animaux pesés</label><input id="q2" type="number" inputmode="numeric" value="30"><label>Poids moyen (g)</label><input id="p2" type="number" inputmode="decimal"><button class="b" onclick="act(()=>addPesee(cb(),v('d2'),n('q2'),n('p2')))">Enregistrer</button></div>
+<div class="card"><h2>Sortie et cession d’un lot</h2><label>Date</label><input id="d3" type="date" value="${today()}"><label>Nombre d’animaux</label><input id="q3" type="number" inputmode="numeric"><label>Poids total (kg)</label><input id="k3" type="number" inputmode="decimal"><label>Destinataire</label><select id="o3">${opts(S.ops.map(o=>o.nom))}</select>
+<button class="b" onclick="act(()=>addSortie(cb(),v('d3'),n('q3'),n('k3'),v('o3')))">Enregistrer la cession (crée le lot et son QR)</button></div>`},
+bilan(){const b=cb();if(!b)return nb();const s=st(b),k=(l,x,u='')=>`<div class="k"><b>${x}${u}</b><span>${l}</span></div>`;return`<div class="card"><b>${b.code}</b> <span class="tag">Jour ${s.jour}/45</span><div class="note">Tableau de bord de l’éleveur</div></div>
+<div class="g">${k('Effectif présent',s.ef)}${k('Mortalité',f2(s.mort),' %')}${k('Viabilité',f2(s.via),' %')}${k('GMQ',f2(s.gmq),' g/j')}${k('Indice de consommation',f2(s.ic))}${k('Poids moyen',s.pm==null?'—':s.pm,' g')}${k('Animaux sortis',s.so)}${k('Poids vif sorti',f2(s.kg),' kg')}</div>
+<p class="note" style="margin-top:12px">Formules proposées par le cahier des charges, paramétrables dans la version MVP : mortalité = morts cumulés / mis en place × 100 ; viabilité = 100 − mortalité ; GMQ = (poids moyen − poids initial) / jours ; IC = aliment consommé / poids vif produit (sortis + présents − poussins).</p>`},
+alertes(){return`<div class="card"><h2>Seuil d’alerte (paramétrable)</h2><label>Mortalité du jour, en % de l’effectif présent</label><input id="sl" type="number" step="0.1" value="${S.seuil}"><button class="b" onclick="S.seuil=n('sl')||S.seuil;save();msg='Seuil enregistré.';okm=true;R()">Enregistrer le seuil</button>
+<p class="note">Seuil de démonstration. Dans la version MVP, il est fixé uniquement par les services vétérinaires.</p></div>
+<h2>Alertes (${S.alertes.length})</h2>${S.alertes.map(a=>`<div class="card"><span class="tag n">${a.statut}</span> <b>${a.bande}</b><div class="note">${a.date} · mortalité du jour ${f2(a.pct)} % (seuil ${f2(a.seuil)} %)</div></div>`).join('')||'<p class="note">Aucune alerte.</p>'}
+<p class="note">La qualification et la publication des alertes par les services vétérinaires ne sont pas incluses dans ce prototype.</p>`},
+lots(){const l=cl();return`<div class="card"><h2>Registre des opérateurs</h2>${S.ops.map(o=>`<div class="row"><span>${esc(o.nom)}</span><span class="tag">${esc(o.type)}</span></div>`).join('')}<label>Nom</label><input id="on"><label>Type</label><select id="ot">${opts(['Abattoir','Acheteur','Distributeur'])}</select>
+<button class="b s" onclick="S.ops.push({nom:v('on').trim()||'Opérateur',type:v('ot')});save();log('ajout_operateur',{nom:v('on')}).then(R)">Ajouter l’opérateur</button></div>
+<h2>Lots (${S.lots.length})</h2>${S.lots.map(x=>`<div class="card ${x.id==S.lid?'sel':''}" onclick="selL(${x.id})"><b>${x.code}</b> <span class="tag">${x.statut}</span><div class="note">${x.date} · ${x.n} animaux · ${x.kg} kg · ${esc(x.dest)}</div></div>`).join('')||'<p class="note">Aucun lot : enregistrez une cession dans l’onglet Saisies.</p>'}
+${l?`<div class="card"><h2>QR du lot ${l.code}</h2><div id="qr"></div><code>AGT241:${l.code}:${l.emp}</code><p class="note">Le QR ouvre la page publique du lot (producteur, province, date) et contient une empreinte de ses données, sans donnée personnelle. Ce n’est pas un certificat sanitaire.</p>
+<button class="b" onclick="scanCode('AGT241:${l.code}:${l.emp}')">Scanner ce QR</button><button class="b s" onclick="scanCode('AGT241:${l.code}:${l.emp.slice(0,11)}${l.emp.slice(-1)=='0'?'1':'0'}')">Scanner une copie falsifiée</button>
+${l.statut=='actif'?`<button class="b s" onclick="S.lots.find(x=>x.id==${l.id}).statut='clos';save();log('cloture_lot',{lot:'${l.code}'}).then(R)">Clore ce lot</button>`:''}</div>`:''}
+<div class="card"><h2>Scanner un code</h2><label>Contenu du QR (saisir ou coller)</label><input id="sc" placeholder="AGT241:…"><button class="b" onclick="scanCode(v('sc'))">Vérifier</button><p class="note">Avec l’appareil photo d’un téléphone, le QR ouvre la page publique du lot. Dans l’application, la vérification se fait en collant le lien ou le contenu du QR.</p>
+${S.journal.filter(e=>e.action=='scan').slice(-5).reverse().map(e=>`<div class="row"><span>${e.t.slice(11,19)}</span><span>${esc(e.d.resultat.slice(0,38))}</span></div>`).join('')}</div>`},
+journal(){return`<div class="card"><h2>Journal non modifiable</h2><p class="note">Chaque opération est liée à la précédente par une empreinte SHA-256 : toute modification est détectable.</p>
+<button class="b" onclick="chk()">Vérifier l’intégrité</button><button class="b s" onclick="tamper()">Simuler une altération (test)</button></div>
+<h2>Opérations (${S.journal.length})</h2>${S.journal.slice(-60).reverse().map(e=>`<div class="card"><b>#${e.n} · ${e.action}</b><div class="note">${e.t.replace('T',' ').slice(0,19)}</div><code>${e.hash.slice(0,24)}… ← ${e.prev.slice(0,12)}…</code></div>`).join('')||'<p class="note">Journal vide.</p>'}`}};
+async function chk(){const r=await verif(S.journal);msg=r?`Chaîne rompue à l’entrée n°${r}.`:`Chaîne intacte : ${S.journal.length} entrées vérifiées.`;okm=!r;R()}
+async function tamper(){if(S.journal.length<2){msg='Ajoutez d’abord quelques opérations.';okm=false;return R()}const c=JSON.parse(JSON.stringify(S.journal));c[Math.floor(c.length/2)].d.modifie=true;const r=await verif(c);msg=`Test sur une copie : altération détectée à l’entrée n°${r}. Vos données ne sont pas modifiées.`;okm=true;R()}
+async function demo(){if(S.fermes.length||S.journal.length)return'Des données existent déjà : touchez « Effacer toutes les données » avant de charger la démonstration.';S=fresh();const d=k=>{const x=new Date(Date.now()-k*864e5);return new Date(x-x.getTimezoneOffset()*6e4).toISOString().slice(0,10)};await mkFerme('Ferme de démonstration','Estuaire');await mkBande(S.fermes[0],d(40),1000,40);const b=S.bandes[0];
+for(const[k,m,a]of[[35,12,100],[28,10,450],[20,38,850],[12,8,1000],[4,9,1000]])await addJour(b,d(k),m,a);for(const[k,p]of[[30,300],[20,780],[10,1400],[3,2000]])await addPesee(b,d(k),30,p);
+await addSortie(b,d(1),900,1800,'Abattoir de démonstration');return'OK:Données fictives de démonstration chargées (une alerte est déclenchée le jour 20).'}
+function qr(){const l=cl(),e=$('#qr');if(!l||!e)return;e.innerHTML='';if(window.QRCode)new QRCode(e,{text:pubURL(l),width:240,height:240,correctLevel:QRCode.CorrectLevel.L});else e.innerHTML='<span class="note">QR indisponible : bibliothèque non chargée (connexion nécessaire à la première ouverture).</span>'}
+function R(){if(location.hash.startsWith('#AGT241-'))return pub();$('#tabs').innerHTML=T.map(([k,l])=>`<button class="${k==tab?'on':''}" onclick="go('${k}')">${l}</button>`).join('');$('#app').innerHTML=(msg?`<div class="msg ${okm?'ok':'ko'}">${esc(msg)}</div>`:'')+V[tab]();if(tab=='lots')qr()}
+const net=()=>$('#net').textContent=navigator.onLine?'En ligne':'Hors ligne';addEventListener('online',net);addEventListener('offline',net);net();addEventListener('hashchange',R);if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});R();
+</script>
+</body>
+</html>
